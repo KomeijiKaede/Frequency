@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Frequency</string>
+    <string name="channel_name">Playback</string>
+    <string name="notification_description">PlaybackController</string>
+
+    <string name="tab_name_left">HOME</string>
+    <string name="tab_name_right">BROWSER</string>
+
+    <string name="action_prev">Skip to Previous</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_play">Play</string>
+    <string name="action_next">Skip to Next</string>
+</resources>
