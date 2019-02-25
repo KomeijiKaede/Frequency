@@ -9,14 +9,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_recycler.*
-import net.teamfruit.frequency.R
-import net.teamfruit.frequency.database.DBEntity
-import net.teamfruit.frequency.ui.adapter.RecyclerAdapter
+import net.teamfruit.frequency.database.MediaMetadataFactory
 import net.teamfruit.frequency.ui.viewmodel.RecyclerViewModel
 import net.teamfruit.frequency.util.Injector
 import org.jetbrains.anko.constraint.layout.constraintLayout
-import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.support.v4.UI
 
@@ -28,12 +24,21 @@ class RecyclerFragment : Fragment() {
         viewModel = ViewModelProviders
                 .of(this, Injector.provideRecyclerFragment(context))
                 .get(RecyclerViewModel::class.java)
-        recycler_list.adapter = viewModel.adapter
 
-        viewModel.getList().observe(this, Observer { viewModel.adapter.addList(it!!) })
+        viewModel.getList().observe(this, Observer {
+            viewModel.adapter.addList(it!!)
+            MediaMetadataFactory(context).convert()
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_recycler, container, false)
+        return UI {
+            constraintLayout {
+                recyclerView {
+                    this.adapter = viewModel.adapter
+                    this.layoutManager = LinearLayoutManager(context)
+                }
+            }
+        }.view
     }
 }

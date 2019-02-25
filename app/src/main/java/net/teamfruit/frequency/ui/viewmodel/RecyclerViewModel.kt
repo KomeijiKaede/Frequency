@@ -17,7 +17,7 @@ class RecyclerViewModel(private val base: Base, private val musicConnection: Mus
 
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
-            Log.d("MediaSession", "Subscribed")
+            Log.d("MediaSession RecyclerFragment", "Subscribed")
         }
     }
 
@@ -27,7 +27,7 @@ class RecyclerViewModel(private val base: Base, private val musicConnection: Mus
 
     override fun onClick(entity: DBEntity) {
         mediaId = entity.videoID
-        musicConnection.also { it.subscribe(mediaId, subscriptionCallback) }.transportControlls.playFromMediaId(mediaId, null)
+        musicConnection.also { it.subscribe(mediaId, subscriptionCallback) }.transportControls.playFromMediaId(mediaId, null)
     }
 
     override fun onLongClick(entity: DBEntity) = base.dbdao().delete(entity)

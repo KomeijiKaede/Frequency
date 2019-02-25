@@ -7,6 +7,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import net.teamfruit.frequency.util.EMPTY_PLAYBACK_STATE
 import net.teamfruit.frequency.util.NOTHING_PLAYING
 
@@ -20,7 +21,7 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
     val nowPlaying = MutableLiveData<MediaMetadataCompat>()
             .apply { postValue(NOTHING_PLAYING) }
 
-    val transportControlls: MediaControllerCompat.TransportControls
+    val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls ?: throw IllegalStateException("mediaController is null")
 
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) =
@@ -38,10 +39,16 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
         override fun onConnected() {
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(object : MediaControllerCompat.Callback() {
-                    override fun onPlaybackStateChanged(state: PlaybackStateCompat?) =
-                            this@MusicConnection.playbackState.postValue(state?: EMPTY_PLAYBACK_STATE)
-                    override fun onMetadataChanged(metadata: MediaMetadataCompat?) =
-                            this@MusicConnection.nowPlaying.postValue(metadata?: NOTHING_PLAYING)
+                    override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+                        Log.d("MusicConnection", "playback state changed")
+                        this@MusicConnection.playbackState.postValue(state?: EMPTY_PLAYBACK_STATE)
+                    }
+
+                    override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
+                        Log.d("MusicConnection", "metadata changed")
+                        this@MusicConnection.nowPlaying.postValue(metadata?: NOTHING_PLAYING)
+                    }
+
                 }) }
             isConnected.postValue(true)
         }
@@ -51,7 +58,6 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
     }
 
     companion object {
-        // For Singleton instantiation.
         @Volatile
         private var instance: MusicConnection? = null
 

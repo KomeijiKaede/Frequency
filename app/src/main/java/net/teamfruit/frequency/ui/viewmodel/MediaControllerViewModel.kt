@@ -8,7 +8,7 @@ import net.teamfruit.frequency.database.Base
 import net.teamfruit.frequency.service.MusicConnection
 
 class MediaControllerViewModel(musicConnection: MusicConnection): ViewModel() {
-    private val transportControls = musicConnection.transportControlls
+    private val transportControls = musicConnection.transportControls
 
     val state = musicConnection.playbackState
 

@@ -5,14 +5,14 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
 import net.teamfruit.frequency.util.Injector
-import java.util.*
+import net.teamfruit.frequency.util.music
 
 class MediaMetadataFactory(context: Context) {
-    private val music = TreeMap<String, MediaMetadataCompat>()
     private val base = Injector.provideBase(context)
 
     fun convert() {
         for (item in base.dbdao().findAll()) create(item.videoID, item.title)
+        Log.d("Factory", "convert")
     }
 
     fun getMediaItems(): MutableList<MediaBrowserCompat.MediaItem> {

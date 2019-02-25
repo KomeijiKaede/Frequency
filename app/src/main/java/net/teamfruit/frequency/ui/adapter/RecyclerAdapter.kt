@@ -30,6 +30,7 @@ class RecyclerAdapter(private var list: List<DBEntity>, private val listener: On
 
     fun addList(newList: List<DBEntity>) {
         this.list = newList
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

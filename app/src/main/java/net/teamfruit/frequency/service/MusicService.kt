@@ -1,5 +1,6 @@
 package net.teamfruit.frequency.service
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -16,10 +17,7 @@ import android.util.Log
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import net.teamfruit.frequency.database.Base
 import net.teamfruit.frequency.database.MediaMetadataFactory
-import net.teamfruit.frequency.util.AddAsyncTask
-import net.teamfruit.frequency.util.CHANNEL_ID
 import net.teamfruit.frequency.util.Extractor
 import net.teamfruit.frequency.util.PlayerResponse
 import java.net.URLDecoder
@@ -64,8 +62,7 @@ class MusicService: MediaBrowserServiceCompat() {
 
                                 val format = Extractor.getBestQualityAudioFormatByAdaptiveFormats(
                                         parsedJson.streamingData.adaptiveFormats) ?: return@response
-
-                                metadataFactory.convert()
+                                metadataFactory.getMetadata(mediaId)
                                 mediaSession.setMetadata(metadataFactory.getMetadata(mediaId))
                                 mediaPlayer.apply {
                                     reset()
@@ -81,7 +78,13 @@ class MusicService: MediaBrowserServiceCompat() {
         }
 
         override fun onPlay() {
+            Log.d("MediaSession", "Start")
             mediaPlayer.start()
+        }
+
+        override fun onPause() {
+            Log.d("MediaSession", "Pause")
+            mediaPlayer.pause()
         }
 
         override fun onSkipToPrevious() {
@@ -95,16 +98,24 @@ class MusicService: MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+        val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)
+        val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0)
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
         mediaSession = MediaSessionCompat(this, "SESSION_TAG").apply {
             setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
                     MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS or
                     MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
             setCallback(mediaSessionCallback)
+            setSessionActivity(sessionActivityPendingIntent)
+            isActive = true
         }
+
         sessionToken = mediaSession.sessionToken
-        mediaController = MediaControllerCompat(this, mediaSession.sessionToken)
-                .also { it.registerCallback(MediaControllerCallback()) }
+        mediaController = MediaControllerCompat(this, mediaSession).also {
+            it.registerCallback(MediaControllerCallback())
+        }
+
         notificationBuilder = NotificationBuilder(this)
         notificationManager = NotificationManagerCompat.from(this)
     }
@@ -118,46 +129,59 @@ class MusicService: MediaBrowserServiceCompat() {
 
     private inner class MediaControllerCallback: MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            mediaController.playbackState?.let { updateNotification(it) }
+            mediaController.playbackState?.let {
+                update()
+                updateNotification(it)
+            }
+            Log.d("Service", "metadata changed")
         }
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             state?.let { updateNotification(it) }
+            Log.d("Service", "playback state changed")
         }
 
-        private fun updateNotification(state: PlaybackStateCompat) {
-            val updateState = state.state
-            if (mediaController.metadata == null) {
-                Log.d("Service", "metadata is null")
+        private fun update() {
+            Log.d("Service", "log")
+        }
+    }
+
+    private fun updateNotification(state: PlaybackStateCompat) {
+        val updateState = state.state
+
+        Log.d("Service", "updateNotification")
+
+        if (mediaController.metadata == null) return
+
+        val notification = if (updateState != PlaybackStateCompat.STATE_NONE)
+            notificationBuilder.buildNotification(mediaSession.sessionToken) else null
+
+        when (updateState) {
+            PlaybackStateCompat.STATE_BUFFERING,
+            PlaybackStateCompat.STATE_PLAYING -> {
+                Log.d("Service", "STATE_PLAYING")
+                if (!isForegroundService) {
+                    startService(Intent(applicationContext, this@MusicService::class.java))
+                    startForeground(notificationId, notification)
+                    isForegroundService = true
+                    Log.d("Service", "service start")
+                } else if (notification != null) {
+                    notificationManager.notify(notificationId, notification)
+                    Log.d("Service", "notification")
+                }
             }
 
-            val notification = if (updateState != PlaybackStateCompat.STATE_NONE)
-                notificationBuilder.buildNotification(mediaSession.sessionToken) else null
+            else -> {
+                Log.d("Service", "ded?")
+                if (isForegroundService) {
+                    stopForeground(false)
+                    isForegroundService = false
 
-            when (updateState) {
-                PlaybackStateCompat.STATE_BUFFERING,
-                PlaybackStateCompat.STATE_PLAYING -> {
-                    Log.d("Service", "STATE_PLAYING")
-                    if (!isForegroundService) {
-                        startService(Intent(applicationContext, this@MusicService::class.java))
-                        startForeground(notificationId, notification)
-                        isForegroundService = true
-                    } else if (notification != null)
-                        notificationManager.notify(notificationId, notification)
-                }
+                    if (updateState == PlaybackStateCompat.STATE_NONE)
+                        stopSelf()
 
-                else -> {
-                    Log.d("Service", "ded?")
-                    if (isForegroundService) {
-                        stopForeground(false)
-                        isForegroundService = false
-
-                        if (updateState == PlaybackStateCompat.STATE_NONE)
-                            stopSelf()
-
-                        if (notification != null)
-                            notificationManager.notify(notificationId, notification) else stopForeground(true)
-                    }
+                    if (notification != null)
+                        notificationManager.notify(notificationId, notification) else stopForeground(true)
                 }
             }
         }

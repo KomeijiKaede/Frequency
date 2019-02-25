@@ -12,12 +12,9 @@ class TabPagerAdapter(fm: FragmentManager): FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when(position) {
+            0 -> RecyclerFragment()
             1 -> BrowserFragment()
-            2 -> RecyclerFragment()
-            else -> {
-                Log.d("ViewPager", "what the fuck")
-                RecyclerFragment()
-            }
+            else -> RecyclerFragment()
         }
     }
 }

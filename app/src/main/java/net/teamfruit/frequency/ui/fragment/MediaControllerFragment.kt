@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,18 +30,21 @@ class MediaControllerFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_mediacontroller, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
 
         button_prev.setOnClickListener {
+            Log.d("MediaControllerFragment", "prev")
             viewModel.skipToPrev()
         }
 
         button_next.setOnClickListener {
+            Log.d("MediaControllerFragment", "next")
             viewModel.skipToNext()
         }
 
         button_playback.setOnClickListener {
+            Log.d("MediaControllerFragment", "playback")
             viewModel.state.observe(this, Observer { state ->
                 viewModel.playback(state?: EMPTY_PLAYBACK_STATE)
             })

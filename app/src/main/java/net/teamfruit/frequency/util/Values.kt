@@ -2,6 +2,7 @@ package net.teamfruit.frequency.util
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import java.util.*
 
 @Suppress("PropertyName")
 val EMPTY_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
@@ -14,4 +15,6 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
         .build()
 
-val CHANNEL_ID = "net.teamfruit.frequency"
+const val CHANNEL_ID = "net.teamfruit.frequency"
+
+val music = TreeMap<String, MediaMetadataCompat>()
