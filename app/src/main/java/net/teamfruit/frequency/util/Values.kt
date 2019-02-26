@@ -16,5 +16,7 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
         .build()
 
 const val CHANNEL_ID = "net.teamfruit.frequency"
+const val NOTIFICATION_ID = 5613
+const val APPLICATION_NAME = "Frequency"
 
 val music = TreeMap<String, MediaMetadataCompat>()
