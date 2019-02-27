@@ -11,7 +11,7 @@ import net.teamfruit.frequency.ui.viewmodel.MediaControllerViewModel
 import net.teamfruit.frequency.ui.viewmodel.RecyclerViewModel
 
 object Injector {
-    private fun provideMusicConnection(context: Context) : MusicConnection{
+    private fun provideMusicConnection(context: Context) : MusicConnection {
         return MusicConnection.getInstance(context, ComponentName(context, MusicService::class.java))
     }
 
@@ -30,11 +30,13 @@ object Injector {
 
     fun provideMediaControllerFragment(context: Context) : MediaControllerViewModel.Factory {
         val appContext = context.applicationContext
-        return MediaControllerViewModel.Factory(provideMusicConnection(appContext))
+        val musicConnection = provideMusicConnection(appContext)
+        return MediaControllerViewModel.Factory(musicConnection)
     }
 
     fun provideMainActivity(context: Context) : MainActivityViewModel.Factory {
         val appContext = context.applicationContext
-        return MainActivityViewModel.Factory(provideMusicConnection(appContext))
+        val musicConnection = provideMusicConnection(appContext)
+        return MainActivityViewModel.Factory(musicConnection)
     }
 }

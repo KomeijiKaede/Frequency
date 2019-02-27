@@ -25,10 +25,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import net.teamfruit.frequency.database.MediaMetadataFactory
-import net.teamfruit.frequency.util.APPLICATION_NAME
-import net.teamfruit.frequency.util.Extractor
-import net.teamfruit.frequency.util.NOTIFICATION_ID
-import net.teamfruit.frequency.util.PlayerResponse
+import net.teamfruit.frequency.util.*
 import java.net.URLDecoder
 
 class MusicService: MediaBrowserServiceCompat() {
@@ -40,6 +37,9 @@ class MusicService: MediaBrowserServiceCompat() {
 
     private var isForegroundService = false
 
+    private var index = 0 //This is currently selected playlist index
+
+    private val queueList = mutableListOf<MediaSessionCompat.QueueItem>()
     private val metadataFactory = MediaMetadataFactory(this)
 
     private val attribute = AudioAttributes.Builder()
@@ -64,8 +64,6 @@ class MusicService: MediaBrowserServiceCompat() {
 
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlayFromMediaId(mediaId: String, extras: Bundle?) {
-            Log.d("MusicService", "Request play from mediaID")
-
             val gson = Gson()
             Fuel.get("https://www.youtube.com/get_video_info?video_id=$mediaId")
                     .response { _, response, result ->
@@ -108,21 +106,27 @@ class MusicService: MediaBrowserServiceCompat() {
         }
 
         override fun onPlay() {
-            Log.d("MediaSession", "Start")
             exoPlayer.playWhenReady = true
         }
 
         override fun onPause() {
-            Log.d("MediaSession", "Pause")
             exoPlayer.playWhenReady = false
         }
 
         override fun onSkipToPrevious() {
-            Log.d("MusicService", "未実装")
+            index--
+            if (index < queueList.size) index = queueList.lastIndex
+            onPlayFromMediaId(queueList[index].description.mediaId ?: throw IllegalStateException(), null)
         }
 
         override fun onSkipToNext() {
-            Log.d("MusicService", "未実装")
+            index++
+            if (index >= queueList.size) index = 0
+            onPlayFromMediaId(queueList[index].description.mediaId ?: throw IllegalStateException(), null)
+        }
+
+        override fun onSetRepeatMode(repeatMode: Int) {
+            exoPlayer.repeatMode = repeatMode
         }
     }
 
@@ -148,6 +152,11 @@ class MusicService: MediaBrowserServiceCompat() {
 
         notificationBuilder = NotificationBuilder(this)
         notificationManager = NotificationManagerCompat.from(this)
+
+        for ((x, item) in metadataFactory.getMediaItems().withIndex())
+            queueList.add(MediaSessionCompat.QueueItem(item.description, x.toLong()))
+
+        mediaSession.setQueue(queueList)
     }
     override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
         return MediaBrowserServiceCompat.BrowserRoot("ROOT_ID", null)
@@ -179,6 +188,9 @@ class MusicService: MediaBrowserServiceCompat() {
     private inner class MediaControllerCallback: MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             mediaController.playbackState?.let { updateNotification(it) }
+            for ((x, item) in MediaMetadataFactory(this@MusicService).getMediaItems().withIndex()) {
+                queueList.add(MediaSessionCompat.QueueItem(item.description, x.toLong()))
+            }
             Log.d("Service", "metadata changed")
         }
 

@@ -4,7 +4,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import net.teamfruit.frequency.R
 import net.teamfruit.frequency.database.DBEntity
 
@@ -25,6 +27,7 @@ class RecyclerAdapter(private var list: List<DBEntity>, private val listener: On
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = list[position]
         holder.title.text = currentItem.title
+        Glide.with(holder.image).load(currentItem.thumbnail).into(holder.image)
         holder.bind(currentItem)
     }
 
@@ -35,6 +38,7 @@ class RecyclerAdapter(private var list: List<DBEntity>, private val listener: On
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.itemTextView)!!
+        val image = itemView.findViewById<ImageView>(R.id.itemImageView)!!
 
         fun bind(entity: DBEntity) {
             itemView.setOnClickListener {

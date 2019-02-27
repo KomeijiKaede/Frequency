@@ -11,5 +11,7 @@ data class DBEntity constructor(
         @ColumnInfo(name = "title")
         var title: String,
         @ColumnInfo(name = "videoID")
-        var videoID: String
+        var videoID: String,
+        @ColumnInfo(name = "thumbnail")
+        var thumbnail: String
 )

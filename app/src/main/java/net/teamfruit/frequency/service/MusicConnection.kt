@@ -24,6 +24,9 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls ?: throw IllegalStateException("mediaController is null")
 
+    val state: Int
+        get() = mediaController.playbackState.state
+
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) =
         mediaBrowser.subscribe(parentId, callback)
     fun unsubscribe(parentId: String) =
@@ -35,7 +38,7 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
             .apply { connect() }
 
 
-    inner class ConnectionCallback(private val context: Context) : MediaBrowserCompat.ConnectionCallback() {
+    private inner class ConnectionCallback(private val context: Context) : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(object : MediaControllerCompat.Callback() {
@@ -47,6 +50,10 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
                     override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
                         Log.d("MusicConnection", "metadata changed")
                         this@MusicConnection.nowPlaying.postValue(metadata?: NOTHING_PLAYING)
+                    }
+
+                    override fun onSessionDestroyed() {
+                        this@ConnectionCallback.onConnectionSuspended()
                     }
 
                 }) }

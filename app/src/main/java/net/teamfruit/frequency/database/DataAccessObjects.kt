@@ -12,5 +12,5 @@ interface DataAccessObjects {
     @Query("SELECT * FROM DBEntity")
     fun findAll(): List<DBEntity>
     @Query("SELECT * FROM DBEntity")
-    fun livedataAll(): LiveData<List<DBEntity>>
+    fun liveDataAll(): LiveData<List<DBEntity>>
 }

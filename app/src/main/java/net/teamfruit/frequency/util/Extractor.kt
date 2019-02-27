@@ -47,7 +47,7 @@ data class Thumbnail (
 )
 
 object Extractor {
-    fun getYoutubeUriByVid(youtubeUri: String): String {
+    private fun getYoutubeUriByVid(youtubeUri: String): String {
         return when {
             Regex("""^https?://(www\.)?(m\.)?youtube\.com""").containsMatchIn(youtubeUri) -> {
                 val videoIdResult = Regex("""v=[\w\-]{11}""").find(youtubeUri)
@@ -92,6 +92,16 @@ object Extractor {
         return bestQualityAudioFormat
     }
 
+    private fun getThumbnail(res: PlayerResponse) : String {
+        var index = 0
+        for ((x, item) in res.videoDetails.thumbnail.thumbnails.withIndex()) {
+            if (Integer.parseInt(item.width) < index)
+                continue
+            index = x
+        }
+        return res.videoDetails.thumbnail.thumbnails[index].url
+    }
+
     fun addInfo(url: String, base: Base) {
         val gson = Gson()
         val id = getYoutubeUriByVid(url)
@@ -115,7 +125,7 @@ object Extractor {
                             val format = getBestQualityAudioFormatByAdaptiveFormats(
                                     parsedJson.streamingData.adaptiveFormats) ?: return@response
 
-                            AddAsyncTask(base).execute(Base.create(parsedJson.videoDetails.title, id))
+                            AddAsyncTask(base).execute(Base.create(parsedJson.videoDetails.title, id, getThumbnail(parsedJson)))
                         }
 
                         is Result.Failure -> return@response
