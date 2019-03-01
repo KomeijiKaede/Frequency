@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,26 +30,19 @@ class MediaControllerFragment: Fragment() {
     override fun onStart() {
         super.onStart()
 
-        button_prev.setOnClickListener {
-            Log.d("MediaControllerFragment", "prev")
-            viewModel.skipToPrev()
-        }
+        button_prev.setOnClickListener { viewModel.skipToPrev() }
 
-        button_next.setOnClickListener {
-            Log.d("MediaControllerFragment", "next")
-            viewModel.skipToNext()
-        }
+        button_next.setOnClickListener { viewModel.skipToNext() }
 
         button_playback.setOnClickListener {
-            Log.d("MediaControllerFragment", "playback")
             when (viewModel.state) {
                 PlaybackStateCompat.STATE_PLAYING -> {
-                    button_playback.setImageResource(R.drawable.exo_controls_pause)
                     viewModel.transportControls.pause()
+                    button_playback.setImageResource(R.drawable.exo_controls_pause)
                 }
                 PlaybackStateCompat.STATE_PAUSED -> {
-                    button_playback.setImageResource(R.drawable.exo_controls_play)
                     viewModel.transportControls.play()
+                    button_playback.setImageResource(R.drawable.exo_controls_play)
                 }
             }
         }

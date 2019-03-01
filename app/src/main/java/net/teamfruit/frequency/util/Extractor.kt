@@ -122,9 +122,6 @@ object Extractor {
 
                             if (parsedJson.playabilityStatus.status == "UNPLAYABLE") return@response
 
-                            val format = getBestQualityAudioFormatByAdaptiveFormats(
-                                    parsedJson.streamingData.adaptiveFormats) ?: return@response
-
                             AddAsyncTask(base).execute(Base.create(parsedJson.videoDetails.title, id, getThumbnail(parsedJson)))
                         }
 

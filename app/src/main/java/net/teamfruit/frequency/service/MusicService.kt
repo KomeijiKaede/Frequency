@@ -13,7 +13,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import com.github.kittinunf.fuel.Fuel
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -78,7 +77,7 @@ class MusicService: MediaBrowserServiceCompat() {
                                                     "UTF-8"),
                                             PlayerResponse::class.java
                                     )
-                                }catch (e: JsonSyntaxException) { return@response }
+                                } catch (e: JsonSyntaxException) { return@response }
 
                                 if (parsedJson.playabilityStatus.status == "UNPLAYABLE") return@response
 
@@ -93,9 +92,7 @@ class MusicService: MediaBrowserServiceCompat() {
 
                                 exoPlayer.prepare(mediaSource)
 
-                                metadataFactory.getMetadata(mediaId)
-
-                                mediaSession.setMetadata(metadataFactory.getMetadata(mediaId))
+                                Thread { mediaSession.setMetadata(metadataFactory.getMetadata(mediaId)) }.start()
 
                                 onPlay()
                             }
@@ -163,7 +160,7 @@ class MusicService: MediaBrowserServiceCompat() {
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
-        result.sendResult(MediaMetadataFactory(this).getMediaItems())
+        result.sendResult(metadataFactory.getMediaItems())
     }
 
     private fun updateState() {
@@ -188,21 +185,17 @@ class MusicService: MediaBrowserServiceCompat() {
     private inner class MediaControllerCallback: MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             mediaController.playbackState?.let { updateNotification(it) }
-            for ((x, item) in MediaMetadataFactory(this@MusicService).getMediaItems().withIndex()) {
+            for ((x, item) in metadataFactory.getMediaItems().withIndex()) {
                 queueList.add(MediaSessionCompat.QueueItem(item.description, x.toLong()))
             }
-            Log.d("Service", "metadata changed")
         }
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             state?.let { updateNotification(it) }
-            Log.d("Service", "playback state changed")
         }
 
         private fun updateNotification(state: PlaybackStateCompat) {
             val updateState = state.state
-
-            Log.d("Service", "updateNotification")
 
             if (mediaController.metadata == null) return
 
@@ -212,29 +205,23 @@ class MusicService: MediaBrowserServiceCompat() {
             when (updateState) {
                 PlaybackStateCompat.STATE_BUFFERING,
                 PlaybackStateCompat.STATE_PLAYING -> {
-                    Log.d("Service", "STATE_PLAYING")
                     if (!isForegroundService) {
                         startService(Intent(applicationContext, this@MusicService::class.java))
                         startForeground(NOTIFICATION_ID, notification)
                         isForegroundService = true
-                        Log.d("Service", "service start")
-                    } else if (notification != null) {
+                    } else if (notification != null)
                         notificationManager.notify(NOTIFICATION_ID, notification)
-                        Log.d("Service", "notification")
-                    }
                 }
 
                 else -> {
-                    Log.d("Service", "ded?")
                     if (isForegroundService) {
                         stopForeground(false)
                         isForegroundService = false
 
-                        if (updateState == PlaybackStateCompat.STATE_NONE)
-                            stopSelf()
+                        if (updateState == PlaybackStateCompat.STATE_NONE) stopSelf()
 
-                        if (notification != null)
-                            notificationManager.notify(NOTIFICATION_ID, notification) else stopForeground(true)
+                        if (notification != null) notificationManager.notify(NOTIFICATION_ID, notification)
+                        else stopForeground(true)
                     }
                 }
             }

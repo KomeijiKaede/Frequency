@@ -13,10 +13,8 @@ abstract class Base: RoomDatabase() {
         fun create(title: String, videoID: String, thumbnail: String) = DBEntity(Random().nextInt(), title, videoID, thumbnail)
         private var INSTANCE: Base? = null
         fun getDataBase(context: Context): Base {
-            if(INSTANCE == null) {
-                INSTANCE = Room.databaseBuilder(context, Base::class.java, "info.db").allowMainThreadQueries()
-                        .fallbackToDestructiveMigration().build()
-            }
+            if(INSTANCE == null)
+                INSTANCE = Room.databaseBuilder(context, Base::class.java, "info.db").allowMainThreadQueries().build()
             return INSTANCE as Base
         }
     }

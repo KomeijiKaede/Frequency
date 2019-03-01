@@ -13,8 +13,10 @@ import net.teamfruit.frequency.database.MediaMetadataFactory
 import net.teamfruit.frequency.ui.viewmodel.RecyclerViewModel
 import net.teamfruit.frequency.util.Injector
 import org.jetbrains.anko.constraint.layout.constraintLayout
+import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.support.v4.UI
+import org.jetbrains.anko.wrapContent
 
 class RecyclerFragment : Fragment() {
     private lateinit var viewModel: RecyclerViewModel
@@ -27,7 +29,7 @@ class RecyclerFragment : Fragment() {
 
         viewModel.getList().observe(this, Observer {
             viewModel.adapter.addList(it!!)
-            MediaMetadataFactory(context).convert()
+            MediaMetadataFactory(context)
         })
     }
 
@@ -35,9 +37,9 @@ class RecyclerFragment : Fragment() {
         return UI {
             constraintLayout {
                 recyclerView {
-                    this.adapter = viewModel.adapter
-                    this.layoutManager = LinearLayoutManager(context)
-                }
+                    adapter = viewModel.adapter
+                    layoutManager = LinearLayoutManager(context)
+                }.lparams(width = matchParent, height = wrapContent)
             }
         }.view
     }
