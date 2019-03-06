@@ -1,9 +1,10 @@
-package net.teamfruit.frequency.ui.fragment
+package net.teamfruit.frequency.ui.layout
 
-import android.support.design.widget.TabLayout
+import android.graphics.Color
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.gridlayout.R.id.vertical
 import net.teamfruit.frequency.MainActivity
 import net.teamfruit.frequency.R
 import net.teamfruit.frequency.util.Page
@@ -12,28 +13,30 @@ import org.jetbrains.anko.constraint.layout.constraintLayout
 import org.jetbrains.anko.design.tabLayout
 import org.jetbrains.anko.support.v4.viewPager
 
-
 class MainActivityUI: AnkoComponent<MainActivity> {
     private lateinit var viewPager: ViewPager
+
+    private val backgroundColorGray = Color.rgb(48,48,48)
+    private val viewPagerWeight: Float = 1F
     override fun createView(ui: AnkoContext<MainActivity>) = with(ui) {
         constraintLayout {
             verticalLayout {
-                val tabLayout = tabLayout {
-                    tabGravity = TabLayout.GRAVITY_CENTER
-                }.lparams(width = matchParent, height = wrapContent)
-
                 viewPager = viewPager {
                     id = R.id.view_pager
-                }.lparams(width = matchParent, height = wrapContent)
-                    tabLayout.setupWithViewPager(viewPager)
+                }.lparams {
+                    weight = viewPagerWeight
                 }
-            verticalLayout {
-                id = R.id.media_controller
-                //minimumHeight = 0
-
-                }.layoutParams.apply {
-                width = matchParent
-                height = 80
+                verticalLayout {
+                    id = R.id.media_controller //Attach fragments later
+                    backgroundColor = backgroundColorGray
+                }.lparams(width = matchParent, height = dip(50))
+                tabLayout {
+                    id = R.id.tab
+                    setupWithViewPager(viewPager)
+                    backgroundColor = backgroundColorGray
+                }.lparams(width = matchParent, height = wrapContent)
+            }.lparams {
+                orientation = vertical
             }
         }
     }

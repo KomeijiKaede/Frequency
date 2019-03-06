@@ -27,4 +27,3 @@ const val APPLICATION_NAME = "Frequency"
 val music = TreeMap<String, MediaMetadataCompat>()
 
 val pages = listOf(Page("home", RecyclerFragment()),Page("browser", BrowserFragment()))
-

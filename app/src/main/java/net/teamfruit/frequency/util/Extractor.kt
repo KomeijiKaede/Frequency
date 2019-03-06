@@ -66,11 +66,8 @@ object Extractor {
 
         for(parameter in parameters) {
             val parsedParameter = parameter.split('=')
-
-            if(parsedParameter[0] == parameterName)
-                return parsedParameter[1]
+            if(parsedParameter[0] == parameterName) return parsedParameter[1]
         }
-
         throw IndexOutOfBoundsException("Are you kidding?")
     }
 
@@ -79,16 +76,11 @@ object Extractor {
         var bestQualityAudioFormat : AdaptiveFormat? = null
 
         for (adaptiveFormat in adaptiveFormats) {
-            if(!adaptiveFormat.mimeType.startsWith("audio"))
-                continue
-
-            if(adaptiveFormat.itag < maxItag)
-                continue
-
+            if(!adaptiveFormat.mimeType.startsWith("audio")) continue
+            if(adaptiveFormat.itag < maxItag) continue
             maxItag = adaptiveFormat.itag
             bestQualityAudioFormat = adaptiveFormat
         }
-
         return bestQualityAudioFormat
     }
 
@@ -118,13 +110,10 @@ object Extractor {
                                                 "UTF-8"),
                                         PlayerResponse::class.java
                                 )
-                            }catch (e: JsonSyntaxException) { return@response }
-
+                            } catch (e: JsonSyntaxException) { return@response }
                             if (parsedJson.playabilityStatus.status == "UNPLAYABLE") return@response
-
                             AddAsyncTask(base).execute(Base.create(parsedJson.videoDetails.title, id, getThumbnail(parsedJson)))
                         }
-
                         is Result.Failure -> return@response
                     }
                 }
