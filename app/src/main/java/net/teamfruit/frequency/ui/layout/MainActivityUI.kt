@@ -15,16 +15,15 @@ import org.jetbrains.anko.support.v4.viewPager
 
 class MainActivityUI: AnkoComponent<MainActivity> {
     private lateinit var viewPager: ViewPager
-
     private val backgroundColorGray = Color.rgb(48,48,48)
-    private val viewPagerWeight: Float = 1F
+
     override fun createView(ui: AnkoContext<MainActivity>) = with(ui) {
         constraintLayout {
             verticalLayout {
                 viewPager = viewPager {
                     id = R.id.view_pager
                 }.lparams {
-                    weight = viewPagerWeight
+                    weight = 1F
                 }
                 verticalLayout {
                     id = R.id.media_controller //Attach fragments later

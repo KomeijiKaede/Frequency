@@ -3,4 +3,5 @@
     <item name="view_pager" type="id"/>
     <item name="media_controller" type="id"/>
     <item name="tab" type="id"/>
+    <item name="editText" type="id"/>
 </resources>

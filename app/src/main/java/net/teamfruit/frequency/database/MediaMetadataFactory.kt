@@ -10,7 +10,7 @@ import net.teamfruit.frequency.util.music
 class MediaMetadataFactory(private val context: Context) {
     private val base = Injector.provideBase(context)
 
-    init { for (item in base.dbdao().findAll()) create(item.videoID, item.title, item.thumbnail) }
+    init { for (item in base.dbdao().findAll()) MetadataFactory.create(item.videoID, item.title, item.thumbnail) }
 
     fun getMediaItems(): MutableList<MediaBrowserCompat.MediaItem> {
         val list: MutableList<MediaBrowserCompat.MediaItem> = mutableListOf()
@@ -35,8 +35,10 @@ class MediaMetadataFactory(private val context: Context) {
             .load(music[mediaId]!!.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
             .submit(300,300)
             .get()
+}
 
-    private fun create(mediaId: String, title: String, thumbnail: String) {
+object MetadataFactory {
+    fun create(mediaId: String, title: String, thumbnail: String) {
         music[mediaId] = MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)

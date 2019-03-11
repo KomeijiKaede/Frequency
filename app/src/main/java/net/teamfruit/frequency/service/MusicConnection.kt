@@ -29,6 +29,10 @@ class MusicConnection(context: Context, serviceComponent: ComponentName) {
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) =
         mediaBrowser.subscribe(parentId, callback)
 
+    fun unsubscribe(parentId: String) {
+        mediaBrowser.unsubscribe(parentId)
+    }
+
     private lateinit var mediaController: MediaControllerCompat
     private val callback = ConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(context, serviceComponent, callback, null)

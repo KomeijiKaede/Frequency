@@ -25,7 +25,7 @@ object Injector {
     }
 
     fun provideBrowserFragment(context: Context) : BrowserViewModel.Factory {
-        return BrowserViewModel.Factory(provideBase(context))
+        return BrowserViewModel.Factory(provideBase(context), provideMusicConnection(context.applicationContext))
     }
 
     fun provideMediaControllerFragment(context: Context) : MediaControllerViewModel.Factory {

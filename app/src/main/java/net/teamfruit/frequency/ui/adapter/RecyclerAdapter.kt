@@ -20,8 +20,7 @@ class RecyclerAdapter(private var list: List<DBEntity>, private val listener: On
     override fun getItemCount() = list.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_item, parent, false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -50,6 +49,5 @@ class RecyclerAdapter(private var list: List<DBEntity>, private val listener: On
                 return@setOnLongClickListener false
             }
         }
-
     }
 }

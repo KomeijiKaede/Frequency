@@ -8,7 +8,7 @@ import net.teamfruit.frequency.database.DBEntity
 import net.teamfruit.frequency.service.MusicConnection
 import net.teamfruit.frequency.ui.adapter.RecyclerAdapter
 
-class RecyclerViewModel(private val base: Base, private val musicConnection: MusicConnection): ViewModel(), RecyclerAdapter.OnClickListener {
+class RecyclerViewModel(private val base: Base, private val musicConnection: MusicConnection): ViewModel(), RecyclerAdapter.OnClickListener{
     private lateinit var mediaId: String
     private val liveDataList: LiveData<List<DBEntity>> = base.dbdao().liveDataAll()
 

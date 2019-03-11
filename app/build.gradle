@@ -22,6 +22,17 @@ android {
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
 }
 
 dependencies {
@@ -74,6 +85,10 @@ dependencies {
         api "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
         api "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     }
+
+    //google apis
+    implementation 'com.google.api-client:google-api-client:1.28.0'
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
 
     //arch
     implementation "android.arch.lifecycle:extensions:$arch_version"
