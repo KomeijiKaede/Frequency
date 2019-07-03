@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import net.teamfruit.frequency.ui.fragment.*
 import net.teamfruit.frequency.ui.layout.MainActivityUI
 import net.teamfruit.frequency.ui.viewmodel.MainActivityViewModel
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                             .add(R.id.media_controller, MediaControllerFragment())
                             .commit()
+                    Log.d("MainActivity", "Fragment attached")
                 }
             })
         }

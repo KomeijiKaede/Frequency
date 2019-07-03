@@ -6,9 +6,9 @@ import android.util.Log
 import net.teamfruit.frequency.database.Base
 import net.teamfruit.frequency.database.DBEntity
 import net.teamfruit.frequency.service.MusicConnection
-import net.teamfruit.frequency.ui.adapter.RecyclerAdapter
+import net.teamfruit.frequency.ui.adapter.RecyclerAdapters
 
-class RecyclerViewModel(private val base: Base, private val musicConnection: MusicConnection): ViewModel(), RecyclerAdapter.OnClickListener{
+class RecyclerViewModel(private val base: Base, private val musicConnection: MusicConnection): ViewModel(), RecyclerAdapters.OnClickListener<DBEntity> {
     private lateinit var mediaId: String
     private val liveDataList: LiveData<List<DBEntity>> = base.dbdao().liveDataAll()
 
@@ -18,16 +18,16 @@ class RecyclerViewModel(private val base: Base, private val musicConnection: Mus
         }
     }
 
-    val adapter = RecyclerAdapter(arrayListOf(), this)
+    val adapter = RecyclerAdapters.RecyclerAdapter(arrayListOf(), this)
 
     fun getList(): LiveData<List<DBEntity>> = liveDataList
 
-    override fun onClick(entity: DBEntity) {
-        mediaId = entity.videoID
+    override fun onClick(item: DBEntity) {
+        mediaId = item.videoID
         musicConnection.also { it.subscribe(mediaId, subscriptionCallback) }.transportControls.playFromMediaId(mediaId, null)
     }
 
-    override fun onLongClick(entity: DBEntity) = base.dbdao().delete(entity)
+    override fun onLongClick(item: DBEntity) = base.dbdao().delete(item)
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val base: Base,

@@ -62,14 +62,4 @@ class BrowserFragment: Fragment() {
             }
         }.view
     }
-
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        button.setOnClickListener {
-            Extractor.addInfo(
-                    editText.text.toString(),
-                    viewModel.getBase()
-            )
-        }
-    }*/
 }

@@ -18,7 +18,7 @@ class DataAPIAccess {
             key = YOUTUBE_API_KEY //Put your Api key.
             q = query
             type = "video"
-            fields = "items(id/videoId,snippet/channelTitle,snippet/title,snippet/thumbnails/high/url)"
+            fields = "items(id/videoId,snippet/channelTitle,snippet/title,snippet/thumbnails/default/url,snippet/thumbnails/high/url)"
             maxResults = 25
         }
         return search.execute().items

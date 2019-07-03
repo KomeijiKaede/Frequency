@@ -3,9 +3,7 @@ package net.teamfruit.frequency.ui.viewmodel
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
-import net.teamfruit.frequency.database.Base
 import net.teamfruit.frequency.service.MusicConnection
 
 class MediaControllerViewModel(musicConnection: MusicConnection): ViewModel() {
@@ -22,10 +20,8 @@ class MediaControllerViewModel(musicConnection: MusicConnection): ViewModel() {
         this.musicConnection.transportControls
     }
 
-    val state = this.musicConnection.state
-
-    fun skipToPrev() = transportControls.skipToPrevious()
-    fun skipToNext() = transportControls.skipToNext()
+    val state
+        get() = this.musicConnection.state
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val musicConnection: MusicConnection): ViewModelProvider.NewInstanceFactory() {

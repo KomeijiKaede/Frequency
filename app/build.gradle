@@ -48,15 +48,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     // Fuel for android
-    implementation 'com.github.kittinunf.fuel:fuel-android:1.15.0'
-
-    //gson
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
+    implementation 'com.github.kittinunf.fuel:fuel-android:2.1.0'
     
-    //Glide
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'
 
-    //Anko
+    // Anko
     implementation "org.jetbrains.anko:anko:$anko_version"
     implementation "org.jetbrains.anko:anko-sdk27:$anko_version"
     implementation "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
@@ -74,8 +72,6 @@ dependencies {
     implementation "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
 
-
-
     if (findProject(':exoplayer-library-core') != null) {
         api project(':exoplayer-library-core')
         api project(':exoplayer-library-ui')
@@ -86,11 +82,21 @@ dependencies {
         api "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     }
 
-    //google apis
+    // google apis
     implementation 'com.google.api-client:google-api-client:1.28.0'
     implementation 'com.google.apis:google-api-services-youtube:v3-rev182-1.22.0'
 
-    //arch
+    // google services
+    implementation 'com.google.gms:google-services:4.2.0'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // firebase
+    implementation "com.google.firebase:firebase-core:16.0.7"
+    implementation "com.google.firebase:firebase-database:16.1.0"
+
+    // arch
     implementation "android.arch.lifecycle:extensions:$arch_version"
     implementation "android.arch.lifecycle:viewmodel:$arch_version"
     implementation "android.arch.lifecycle:livedata:$arch_version"

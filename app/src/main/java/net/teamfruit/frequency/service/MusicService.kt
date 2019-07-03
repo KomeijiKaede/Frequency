@@ -25,7 +25,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import net.teamfruit.frequency.database.MediaMetadataFactory
 import net.teamfruit.frequency.util.*
-import java.net.URLDecoder
 
 class MusicService: MediaBrowserServiceCompat() {
     private lateinit var audioManager: AudioManager
@@ -64,35 +63,27 @@ class MusicService: MediaBrowserServiceCompat() {
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlayFromMediaId(mediaId: String, extras: Bundle?) {
             val gson = Gson()
-            Fuel.get("https://www.youtube.com/get_video_info?video_id=$mediaId")
+            Fuel.get("http://ec2-18-188-107-245.us-east-2.compute.amazonaws.com/info?url=https://www.youtube.com/watch?v=$mediaId")
                     .response { _, response, result ->
                         when (result) {
                             is com.github.kittinunf.result.Result.Success -> {
-                                val parsedJson: PlayerResponse
+                                val parsedJson: ResponseJson
+                                val body = response.toString().split("\n")
                                 try {
                                     parsedJson = gson.fromJson(
-                                            URLDecoder.decode(Extractor.getStringValueByUrlParameters(
-                                                    response.toString(),
-                                                    "player_response"),
-                                                    "UTF-8"),
-                                            PlayerResponse::class.java
+                                            body[3].substring(7), ResponseJson::class.java
                                     )
                                 } catch (e: JsonSyntaxException) { return@response }
-
-                                if (parsedJson.playabilityStatus.status == "UNPLAYABLE") return@response
-
-                                val format = Extractor.getBestQualityAudioFormatByAdaptiveFormats(
-                                        parsedJson.streamingData.adaptiveFormats) ?: return@response
 
                                 val dataSourceFactory = DefaultHttpDataSourceFactory(
                                         Util.getUserAgent(this@MusicService, APPLICATION_NAME))
 
                                 val mediaSource = ExtractorMediaSource.Factory(dataSourceFactory)
-                                        .createMediaSource(Uri.parse(format.url))
+                                        .createMediaSource(Uri.parse(parsedJson.body.url.url))
 
                                 exoPlayer.prepare(mediaSource)
 
-                                Thread { mediaSession.setMetadata(metadataFactory.getMetadata(mediaId)) }.start()
+                                Thread { mediaSession.setMetadata(metadataFactory.getMetadata(mediaId))}.start()
 
                                 onPlay()
                             }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,9 +31,9 @@ class MediaControllerFragment: Fragment() {
     override fun onStart() {
         super.onStart()
 
-        button_prev.setOnClickListener { viewModel.skipToPrev() }
+        button_prev.setOnClickListener { viewModel.transportControls.skipToPrevious() }
 
-        button_next.setOnClickListener { viewModel.skipToNext() }
+        button_next.setOnClickListener { viewModel.transportControls.skipToNext() }
 
         button_playback.setOnClickListener {
             when (viewModel.state) {
