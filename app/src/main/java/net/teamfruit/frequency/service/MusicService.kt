@@ -63,7 +63,7 @@ class MusicService: MediaBrowserServiceCompat() {
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlayFromMediaId(mediaId: String, extras: Bundle?) {
             val gson = Gson()
-            Fuel.get("http://ec2-18-188-107-245.us-east-2.compute.amazonaws.com/info?url=https://www.youtube.com/watch?v=$mediaId")
+            Fuel.get(awsurl(mediaId))
                     .response { _, response, result ->
                         when (result) {
                             is com.github.kittinunf.result.Result.Success -> {
